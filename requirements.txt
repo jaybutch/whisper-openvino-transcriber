@@ -1,0 +1,9 @@
+openvino==2025.4.1
+torch
+torchaudio
+optimum-intel[openvino]
+transformers
+pyaudio
+pystray
+pillow
+keyboard
