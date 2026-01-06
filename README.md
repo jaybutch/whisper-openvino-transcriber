@@ -11,6 +11,8 @@ A fast, local speech-to-text application powered by OpenAI's Whisper model optim
 - 📋 **Easy copying** - auto copies text to clipboard
 - 🌐 **Global hotkeys** - control from anywhere on your system
 
+![Whisper Transcriber GUI](images/Whisper_Transcriber_GUI.png)
+
 ## System Requirements
 
 - **Windows** (tested on Windows 11)
