@@ -386,6 +386,7 @@ class WhisperApp:
                 # Transcribe
                 result = self.pipe(
                     temp_path,
+                    return_timestamps=True, #Enable long-form transcription
                     generate_kwargs={"language": "english", "task": "transcribe"}
                 )
             
