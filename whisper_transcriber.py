@@ -17,6 +17,15 @@ class WhisperApp:
         self.root.title("🎙️ Whisper Live Transcription")
         self.root.geometry("600x500")
         self.root.resizable(False, False)
+
+        # Dark mode colors
+        self.bg_color = "#1e1e1e"
+        self.fg_color = "#e0e0e0"
+        self.accent_color = "#2d2d2d"
+        self.button_bg = "#3a3a3a"
+
+        # Configure root background
+        self.root.configure(bg=self.bg_color)
         
         # Recording state
         self.is_recording = False
@@ -44,21 +53,25 @@ class WhisperApp:
         self.load_model()
     
     def setup_ui(self):
+        
         # Title
         title_label = tk.Label(
             self.root, 
             text="🎙️ Whisper Live Transcription",
-            font=("Arial", 18, "bold"),
-            pady=20
+            font=("Arial", 16, "bold"),
+            fg=self.fg_color,
+            bg=self.bg_color,
+            pady=10
         )
         title_label.pack()
         
         # Hotkey info
         hotkey_label = tk.Label(
             self.root,
-            text="Global Hotkey: Ctrl+Shift+Alt+M (toggle recording) | Ctrl+Shift+Alt+P (copy)",
+            text="Global Hotkey: Ctrl+Shift+Alt+M (toggle) | Ctrl+Shift+Alt+P (copy)",
             font=("Arial", 9, "italic"),
-            fg="gray"
+            fg="#888888",
+            bg=self.bg_color
         )
         hotkey_label.pack()
         
@@ -67,12 +80,14 @@ class WhisperApp:
             self.root,
             text="🔴 Start Recording",
             font=("Arial", 14, "bold"),
-            bg="#4CAF50",
+            bg="#2d6a2d",
             fg="white",
+            activebackground="#3d7a3d",
             width=20,
             height=2,
             command=self.toggle_recording,
-            cursor="hand2"
+            cursor="hand2",
+            relief=tk.FLAT
         )
         self.record_button.pack(pady=10)
         
@@ -80,31 +95,40 @@ class WhisperApp:
         transcription_label = tk.Label(
             self.root,
             text="Transcription:",
-            font=("Arial", 12, "bold")
+            font=("Arial", 11, "bold"),
+            fg=self.fg_color,
+            bg=self.bg_color
         )
-        transcription_label.pack(anchor="w", padx=20, pady=(20, 5))
+        transcription_label.pack(anchor="w", padx=20, pady=(15, 5))
         
         self.transcription_box = scrolledtext.ScrolledText(
             self.root,
             wrap=tk.WORD,
             width=65,
-            height=12,
-            font=("Arial", 10),
-            bg="#f5f5f5"
+            height=10,
+            font=("Consolas", 10),
+            bg="#2d2d2d",
+            fg="#e0e0e0",
+            insertbackground="#e0e0e0",
+            relief=tk.FLAT
         )
         self.transcription_box.pack(padx=20, pady=5)
         
         # Button frame
-        button_frame = tk.Frame(self.root)
+        button_frame = tk.Frame(self.root, bg=self.bg_color)
         button_frame.pack(pady=10)
         
         # Copy button
         self.copy_button = tk.Button(
             button_frame,
-            text="📋 Copy to Clipboard",
+            text="📋 Copy",
             font=("Arial", 10),
+            bg=self.button_bg,
+            fg=self.fg_color,
+            activebackground="#4a4a4a",
             command=self.copy_to_clipboard,
-            state=tk.DISABLED
+            state=tk.DISABLED,
+            relief=tk.FLAT
         )
         self.copy_button.pack(side=tk.LEFT, padx=5)
         
@@ -113,16 +137,24 @@ class WhisperApp:
             button_frame,
             text="🗑️ Clear",
             font=("Arial", 10),
-            command=self.clear_transcription
+            bg=self.button_bg,
+            fg=self.fg_color,
+            activebackground="#4a4a4a",
+            command=self.clear_transcription,
+            relief=tk.FLAT
         )
         clear_button.pack(side=tk.LEFT, padx=5)
         
         # Minimize to tray button
         tray_button = tk.Button(
             button_frame,
-            text="⬇️ Minimize to Tray",
+            text="⬇️ Minimize",
             font=("Arial", 10),
-            command=self.hide_window
+            bg=self.button_bg,
+            fg=self.fg_color,
+            activebackground="#4a4a4a",
+            command=self.hide_window,
+            relief=tk.FLAT
         )
         tray_button.pack(side=tk.LEFT, padx=5)
         
@@ -132,7 +164,8 @@ class WhisperApp:
             text=f"Status: {self.status_text}",
             font=("Arial", 9),
             anchor="w",
-            bg="#e0e0e0",
+            bg="#2d2d2d",
+            fg=self.fg_color,
             padx=10,
             pady=5
         )
@@ -258,7 +291,7 @@ class WhisperApp:
         # Update UI
         self.root.after(0, lambda: self.record_button.config(
             text="⏹️ Stop Recording",
-            bg="#f44336"
+            bg="#8b0000"
         ))
         self.update_status("🎤 Recording... Press Ctrl+Shift+Alt+M or click Stop to finish")
 
@@ -362,7 +395,7 @@ class WhisperApp:
         # Update UI
         self.root.after(0, lambda: self.record_button.config(
             text="🔴 Start Recording",
-            bg="#4CAF50",
+            bg="#2d6a2d",
             state=tk.DISABLED
         ))
         self.update_status("✍️ Transcribing...")
