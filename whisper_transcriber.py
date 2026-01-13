@@ -218,11 +218,6 @@ class WhisperApp:
     def hide_window(self):
         """Hide window to system tray"""
         self.root.withdraw()
-        if self.tray_icon:
-            self.tray_icon.notify(
-                "Whisper is running in the background",
-                "Use Ctrl+Shift+Alt+M to record, or click here to show window"
-            )
     
     def show_window(self, icon=None, item=None):
         """Show window from system tray"""
@@ -270,6 +265,11 @@ class WhisperApp:
     
     def toggle_recording(self):
         """Start or stop recording"""
+        # Check if model is loaded
+        if not hasattr(self, 'pipe'):
+            self.update_status("⚠️ Model still loading, please wait...")
+            return
+        
         if not self.is_recording:
             self.start_recording()
         else:

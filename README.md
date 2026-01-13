@@ -5,11 +5,10 @@ A fast, local speech-to-text application powered by OpenAI's Whisper model optim
 ## Features
 
 - 🎤 **Real-time transcription** with global hotkeys
-- 🖥️ **Clean GUI** with system tray support
 - ⚡ **Fast processing** (~1 second per transcription using Intel Arc GPU)
 - 🔒 **Completely local** - no internet required, privacy-focused
 - 📋 **Easy copying** - auto copies text to clipboard
-- 🌐 **Global hotkeys** - control from anywhere on your system
+- 🌐 **Global hotkeys** - control from anywhere while minimized to system tray
 
 ![Whisper Transcriber GUI](images/Whisper_Transcriber_GUI.png)
 
