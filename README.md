@@ -5,7 +5,7 @@ A fast, local speech-to-text application powered by OpenAI's Whisper model optim
 ## Features
 
 - 🎤 **Real-time transcription** with global hotkeys
-- ⚡ **Fast processing** (~1 second per transcription using Intel Arc GPU)
+- ⚡ **Fast processing** (~1-2 seconds per transcription using Intel Arc GPU)
 - 🔒 **Completely local** - no internet required, privacy-focused
 - 📋 **Easy copying** - auto copies text to clipboard
 - 🌐 **Global hotkeys** - control from anywhere while minimized to system tray
@@ -33,8 +33,8 @@ cd whisper-openvino-transcriber
 
 ### 3. Create a virtual environment
 ```bash
-python -m venv venv
-venv\Scripts\activate  # On Windows
+python -m venv whisper_env
+whisper_env\Scripts\activate  # On Windows
 ```
 
 ### 4. Install dependencies
