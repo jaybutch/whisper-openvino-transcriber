@@ -10,6 +10,7 @@ from transformers import WhisperProcessor, pipeline
 import pystray
 from PIL import Image, ImageDraw
 import keyboard
+import winsound
 
 class WhisperApp:
     def __init__(self, root):
@@ -33,6 +34,9 @@ class WhisperApp:
         self.stream = None
         self.p = None
         
+        # Sound on by default
+        self.sound_enabled = True
+
         # Audio settings
         self.CHUNK = 1024
         self.FORMAT = pyaudio.paInt16
@@ -68,7 +72,7 @@ class WhisperApp:
         # Hotkey info
         hotkey_label = tk.Label(
             self.root,
-            text="Global Hotkey: Ctrl+Shift+Alt+M (toggle) | Ctrl+Shift+Alt+P (copy)",
+            text="Global Hotkey: F9 (toggle record)",
             font=("Arial", 9, "italic"),
             fg="#888888",
             bg=self.bg_color
@@ -118,6 +122,22 @@ class WhisperApp:
         button_frame = tk.Frame(self.root, bg=self.bg_color)
         button_frame.pack(pady=10)
         
+        # Sound toggle checkbox
+        self.sound_var = tk.BooleanVar(value=True) # Default to enabled
+        sound_check = tk.Checkbutton(
+            button_frame,
+            text="🔊 Sound",
+            variable=self.sound_var,
+            command=self.toggle_sound,
+            font=("Ariel", 10),
+            bg=self.bg_color,
+            fg=self.fg_color,
+            selectcolor=self.accent_color,
+            activebackground=self.bg_color,
+            activeforeground=self.fg_color
+        )
+        sound_check.pack(side=tk.LEFT, padx=5)
+
         # Copy button
         self.copy_button = tk.Button(
             button_frame,
@@ -171,6 +191,10 @@ class WhisperApp:
         )
         self.status_label.pack(side=tk.BOTTOM, fill=tk.X)
     
+    def toggle_sound(self):
+        """Toggle sound on/off"""
+        self.sound_enabled = self.sound_var.get()
+
     def create_tray_image(self):
         """Create icon for system tray"""
         # Create a simple microphone icon
@@ -191,8 +215,7 @@ class WhisperApp:
         
         menu = pystray.Menu(
             pystray.MenuItem("Show Window", self.show_window),
-            pystray.MenuItem("Start/Stop Recording (Ctrl+Shift+Alt+M)", self.toggle_recording),
-            pystray.MenuItem("Copy to Clipboard (Ctrl+Shift+Alt+P)", self.copy_to_clipboard_hotkey),
+            pystray.MenuItem("Start/Stop Recording (F9)", self.toggle_recording),
             pystray.MenuItem("Quit", self.quit_app)
         )
         
@@ -208,10 +231,9 @@ class WhisperApp:
         tray_thread.start()
     
     def setup_hotkey(self):
-        """Setup global hotkey (Ctrl+Shift+Alt+M)"""
+        """Setup global hotkey (F9 to toggle recording)"""
         try:
-            keyboard.add_hotkey('ctrl+shift+alt+m', self.toggle_recording)
-            keyboard.add_hotkey('ctrl+shift+alt+p', self.copy_to_clipboard_hotkey)
+            keyboard.add_hotkey('f9', self.toggle_recording)
         except Exception as e:
             print(f"Could not register hotkey: {e}")
     
@@ -248,9 +270,10 @@ class WhisperApp:
                     model=self.model,
                     tokenizer=self.processor.tokenizer,
                     feature_extractor=self.processor.feature_extractor,
+                    device=-1  # -1 means don't use PyTorch device handling
                 )
                 
-                self.update_status("Ready to record! (Ctrl+Shift+Alt+M)")
+                self.update_status("Ready to record! (F9)")
                 self.record_button.config(state=tk.NORMAL)
             except Exception as e:
                 self.update_status(f"Error loading model: {str(e)}")
@@ -293,7 +316,7 @@ class WhisperApp:
             text="⏹️ Stop Recording",
             bg="#8b0000"
         ))
-        self.update_status("🎤 Recording... Press Ctrl+Shift+Alt+M or click Stop to finish")
+        self.update_status("🎤 Recording... Press F9 or click Stop to finish")
 
         # Start recording in background thread
         def record():
@@ -461,7 +484,11 @@ class WhisperApp:
         self.root.clipboard_clear()
         self.root.clipboard_append(text)
 
-        self.update_status("✅ Transcription complete & on clipboard! (Ctrl+Shift+Alt+M to record again)")
+        self.update_status("✅ Transcription complete & on clipboard! (F9 to record again)")
+
+        #Play completion sound
+        if self.sound_enabled:
+            winsound.Beep(659, 100)  # Single pleasant E note
     
     def copy_to_clipboard(self):
         """Copy transcription to clipboard"""
@@ -469,25 +496,12 @@ class WhisperApp:
         self.root.clipboard_clear()
         self.root.clipboard_append(text)
         self.update_status("📋 Copied to clipboard!")
-
-    def copy_to_clipboard_hotkey(self):
-        """Copy transcription to clipboard via hotkey"""
-        text = self.transcription_box.get("1.0", tk.END).strip()
-        if text:
-            self.root.clipboard_clear()
-            self.root.clipboard_append(text)
-            self.update_status("📋 Copied to clipboard! (Ctrl+Shift+Alt+P)")
-            # Optional: Show notification if window is hidden
-            if not self.root.winfo_viewable() and self.tray_icon:
-                self.tray_icon.notify("Copied to clipboard!", text[:100] + "..." if len(text) > 100 else text)
-        else:
-            self.update_status("⚠️ Nothing to copy!")
     
     def clear_transcription(self):
         """Clear transcription box"""
         self.transcription_box.delete("1.0", tk.END)
         self.copy_button.config(state=tk.DISABLED)
-        self.update_status("Ready to record! (Ctrl+Shift+Alt+M)")
+        self.update_status("Ready to record! (F9)")
     
     def update_status(self, message):
         """Update status bar"""

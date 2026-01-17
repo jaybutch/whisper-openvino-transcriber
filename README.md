@@ -66,9 +66,8 @@ python whisper_transcriber.py
 - **Clear** button clears the transcription
 - **Minimize to Tray** keeps the app running in background
 
-**Global Hotkeys:**
-- `Ctrl+Shift+Alt+M` - Start/stop recording from anywhere
-- `Ctrl+Shift+Alt+P` - Copy transcription to clipboard
+**Global Hotkey:**
+- `F9` - Start/stop recording from anywhere
 
 **System Tray:**
 - Right-click the tray icon for quick access
